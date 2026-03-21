@@ -1,1 +1,80 @@
+# KAIL H-AZR — Training Configuration
+# All experiments use Qwen2.5-Coder-1.5B + QLoRA 4-bit on single T4 (16GB)
 
+model:
+  name: "Qwen/Qwen2.5-Coder-1.5B-Instruct"
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "float16"
+  bnb_4bit_quant_type: "nf4"
+  use_nested_quant: false
+
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+# --- Stage 1: SPIN ---
+spin:
+  num_iterations: 3          # T iterations of self-play
+  max_samples: 1000          # dataset size
+  beta: 0.1                  # DPO beta
+  learning_rate: 5.0e-5
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  warmup_ratio: 0.1
+  lr_scheduler_type: "cosine"
+  max_length: 512
+  output_dir: "checkpoints/spin"
+
+# --- Stage 2: H-Neuron Probe ---
+h_neuron_probe:
+  dataset: "trivia_qa"
+  split: "validation"
+  num_samples: 500
+  probe_layer: "all"         # probe every MLP layer
+  activation_threshold: 2.0  # z-score threshold for H-Neuron detection
+  output_file: "assets/h_neurons.json"
+
+# --- Stage 3: H-AZR ---
+h_azr:
+  # GRPO hyperparams
+  learning_rate: 1.0e-5
+  num_train_epochs: 2
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  warmup_ratio: 0.05
+  lr_scheduler_type: "cosine"
+  max_new_tokens: 256
+  temperature: 0.8
+  num_generations: 4         # G samples per prompt in GRPO
+
+  # H-Neuron penalty
+  lambda_h: 0.1              # weight of hallucination penalty
+  penalty_layers: "all"      # which layers to penalize
+
+  # Code executor
+  timeout_seconds: 5
+  executor: "python"
+
+  output_dir: "checkpoints/h_azr"
+
+# --- Evaluation ---
+eval:
+  benchmarks:
+    - "truthful_qa"
+    - "halueval_qa"
+    - "gsm8k"
+    - "humaneval"
+  batch_size: 8
+  max_new_tokens: 512
+
+# --- Logging ---
+logging:
+  project: "kail-h-azr"
+  entity: "kora-ai-lab"
+  log_steps: 10
+  save_steps: 100
