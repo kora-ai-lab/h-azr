@@ -1,0 +1,33 @@
+# KAIL H-AZR — Dependencies
+# Tested on Colab T4 (Python 3.10, CUDA 12.x)
+# Install: pip install -r requirements.txt
+
+# Core ML
+torch==2.3.0
+transformers==4.44.0
+datasets==2.20.0
+accelerate==0.33.0
+evaluate==0.4.2
+
+# Fine-tuning
+trl==0.9.6
+peft==0.12.0
+bitsandbytes==0.43.3
+
+# Evaluation
+scikit-learn==1.5.0
+numpy==1.26.4
+pandas==2.2.2
+
+# Logging & tracking
+wandb==0.17.5
+tqdm==4.66.4
+
+# HuggingFace
+huggingface_hub==0.24.5
+safetensors==0.4.3
+
+# Utilities
+sentencepiece==0.2.0
+protobuf==3.20.3
+matplotlib==3.9.0
