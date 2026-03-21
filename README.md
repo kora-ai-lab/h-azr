@@ -1,67 +1,117 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/kora-ai-lab/.github/main/profile/kail-logo-banner.svg" alt="KAIL — Kora AI Lab" width="600"/>
+  <img src="https://raw.githubusercontent.com/kora-ai-lab/.github/main/profile/kail-logo-banner.svg" alt="KAIL" width="500"/>
 </p>
 
-<br/>
+<h1 align="center">H-AZR: Hallucination-Aware Self-Play Reasoning</h1>
 
 <p align="center">
-  <strong>We build world-class AI from Africa, for the world.</strong><br/>
-  <em>Phase 1 funds Phase 2 — code intelligence today, African language sovereignty tomorrow.</em>
+  <em>A 3-stage training pipeline combining SPIN warm-up, H-Neuron probing, and GRPO self-play with hallucination penalty</em>
 </p>
 
-<br/>
+<p align="center">
+  <img src="https://img.shields.io/badge/status-research%20in%20progress-EF9F27?style=flat-square"/>
+  <img src="https://img.shields.io/badge/compute-colab%20T4%20(free)-1D9E75?style=flat-square"/>
+  <img src="https://img.shields.io/badge/base%20model-Qwen2.5--Coder--1.5B-blue?style=flat-square"/>
+  <img src="https://img.shields.io/badge/lab-KAIL%20%7C%20Kora%20AI%20Lab-0D0D0D?style=flat-square"/>
+</p>
 
 ---
 
-## What we are building
+## Research Hypothesis
 
-**KAIL** (Kora AI Lab) is an independent AI research lab operating from the African continent. Our mission is twofold:
+> Standard self-play reasoning (AZR) improves accuracy but may reinforce hallucination by rewarding confident-sounding outputs. We hypothesize that penalizing H-Neuron activation during GRPO training produces a model that reasons better **and** knows when it doesn't know.
 
-- **Phase 1 — Technical disruption**: Publish original research and release competitive open-source models in code intelligence and reasoning, positioning Africa as a serious player in the global AI race.
-- **Phase 2 — Linguistic sovereignty**: Reinvest resources into speech-first models for African languages — tackling the colonial literacy gap where millions of speakers cannot write their own mother tongue.
-
-We operate lean: free compute (Kaggle, Colab), strategic paid runs (RunPod), and open science.
-
----
-
-## Current research
-
-### 🔬 H-AZR — Hallucination-Aware Self-Play Reasoning
-> *"Can a model learn to reason better while simultaneously learning when NOT to answer?"*
-
-We combine four recent research directions into a novel 3-stage training pipeline:
-
-| Stage | Method | What it does |
-|-------|--------|--------------|
-| 1 | **SPIN** (Self-Play Fine-Tuning) | Warm-up via iterative self-distillation |
-| 2 | **H-Neuron Probing** | Map the <0.1% of neurons responsible for hallucination |
-| 3 | **H-AZR** (our contribution) | GRPO self-play with H-Neuron penalty in reward |
-
-**4 experimental scenarios** — rigorous ablation, reproducible on free Colab T4.
-
-→ [`kora-ai-lab/h-azr`](https://github.com/kora-ai-lab/h-azr)
+**Core reward function:**
+```
+R_total = R_accuracy(code_execution) − λ × mean(H_neuron_activations)
+```
 
 ---
 
-## Principles
+## The 4 Experimental Scenarios
 
-- **Open by default** — all code, notebooks, and model weights are public
-- **Reproducible** — every experiment runs on free Colab/Kaggle
-- **Rigorous** — we publish ablations, not just results
-- **African** — built here, owned here, for here and beyond
+| Scenario | Pipeline | Purpose |
+|----------|----------|---------|
+| **A** — Baseline | Base model only | Measure raw hallucination + reasoning |
+| **B** — SPIN only | Base → SPIN | Does alignment reduce H-Neurons? |
+| **C** — Full H-AZR | Base → SPIN → H-AZR | Main contribution |
+| **D** — H-AZR no warmup | Base → H-AZR | Is SPIN warm-up necessary? |
+
+All 4 scenarios run on **free Colab T4 (16GB VRAM)** with Qwen2.5-Coder-1.5B + QLoRA 4-bit.
 
 ---
 
-## Connect
+## Papers This Builds On
 
-- 🤗 HuggingFace: [huggingface.co/kora-ai-lab](https://huggingface.co/kora-ai-lab)
-- 📄 Papers: arXiv (coming)
-- 🌍 Based in West Africa
+| Paper | Key contribution we use |
+|-------|------------------------|
+| [AZR (2025)](https://arxiv.org/abs/2505.03335) | GRPO self-play, zero external data |
+| [SPIN (2024)](https://arxiv.org/abs/2401.01335) | Iterative self-distillation warm-up |
+| [BitNet b1.58 (2023)](https://arxiv.org/abs/2310.11453) | Ternary model target (Phase 2) |
+| H-Neurons (2024) | <0.1% neurons predict hallucination onset |
 
-<br/>
+---
+
+## Repository Structure
+
+```
+h-azr/
+├── notebooks/
+│   ├── 01_baseline_eval.ipynb        # Colab: load model, eval hallucination
+│   ├── 02_h_neuron_probe.ipynb       # Colab: identify H-Neurons
+│   ├── 03_spin_warmup.ipynb          # Colab: Stage 1 SPIN training
+│   └── 04_h_azr_training.ipynb       # Colab: Stage 3 H-AZR + reward
+├── src/
+│   ├── h_neurons.py                  # H-Neuron probe + activation tracking
+│   ├── spin.py                       # SPIN trainer
+│   ├── reward.py                     # H-AZR reward function
+│   └── eval.py                       # Evaluation metrics
+├── configs/
+│   └── training.yaml                 # All hyperparameters
+├── paper/
+│   └── h_azr_draft.tex               # LaTeX paper draft
+├── assets/
+│   └── figures/                      # Paper figures
+└── requirements.txt
+```
+
+---
+
+## Quickstart (Colab)
+
+```python
+# Open notebook 01 first:
+# https://colab.research.google.com/github/kora-ai-lab/h-azr/blob/main/notebooks/01_baseline_eval.ipynb
+```
+
+All notebooks are self-contained — just click "Open in Colab" and run.
+
+---
+
+## Results (in progress)
+
+| Scenario | TruthfulQA | HalluEval | GSM8K | Status |
+|----------|-----------|-----------|-------|--------|
+| A — Baseline | — | — | — | 🔄 Running |
+| B — SPIN | — | — | — | ⏳ Pending |
+| C — Full H-AZR | — | — | — | ⏳ Pending |
+| D — H-AZR no warmup | — | — | — | ⏳ Pending |
+
+---
+
+## Citation
+
+```bibtex
+@misc{kail2025hazr,
+  title   = {H-AZR: Hallucination-Aware Self-Play Reasoning via H-Neuron Penalized GRPO},
+  author  = {Kora AI Lab},
+  year    = {2025},
+  url     = {https://github.com/kora-ai-lab/h-azr}
+}
+```
+
+---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/research-active-1D9E75?style=flat-square"/>
-  <img src="https://img.shields.io/badge/compute-colab%20%7C%20kaggle-EF9F27?style=flat-square"/>
-  <img src="https://img.shields.io/badge/mission-AI%20sovereignty-0D0D0D?style=flat-square"/>
+  Built in West Africa 🌍 · <a href="https://github.com/kora-ai-lab">Kora AI Lab</a>
 </p>
