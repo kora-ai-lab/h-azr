@@ -1,0 +1,27 @@
+# KAIL H-AZR — Dependencies
+# Colab-compatible: does NOT pin torch, numpy, pandas (already installed)
+# Install: pip install -r requirements.txt
+
+# Fine-tuning stack — pin these, they must match each other
+transformers==4.44.0
+trl==0.9.6
+peft==0.12.0
+bitsandbytes==0.43.3
+accelerate==0.33.0
+
+# Data
+datasets>=2.20.0
+
+# Evaluation
+evaluate>=0.4.0
+scikit-learn>=1.3.0
+
+# HuggingFace
+huggingface_hub>=0.22.0
+safetensors>=0.4.0
+
+# Logging
+wandb>=0.16.0
+
+# Utilities
+sentencepiece>=0.1.99
