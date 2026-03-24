@@ -24,6 +24,7 @@ Badges for all notebooks:
 | 02 — H-Neuron probe | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kora-ai-lab/h-azr/blob/main/notebooks/02_h_neuron_probe.ipynb) |
 | 03 — SPIN warmup | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kora-ai-lab/h-azr/blob/main/notebooks/03_spin_warmup.ipynb) |
 | 04 — H-AZR training | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kora-ai-lab/h-azr/blob/main/notebooks/04_h_azr_training.ipynb) |
+05 - master: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kora-ai-lab/h-azr/blob/main/notebooks/KAIL_MASTER.ipynb)
 
 ---
 
