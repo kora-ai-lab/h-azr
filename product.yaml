@@ -1,0 +1,16 @@
+nom: h-azr
+venture: kora
+archetype: ia_recherche
+description: "Architecture modèle propriétaire — dormant, bloqué par compute"
+repo: https://github.com/kora-ai-lab/h-azr
+phase_state:
+  phase_actuelle: 1
+  palier_actuel: "1.1"
+  paliers:
+    "1.1": {nom: "Recherche utilisateur", clos: true}
+    "1.2": {nom: "Validation douleur", clos: true}
+    "1.3": {nom: "Volonté de payer", clos: false}
+  gate_criteres:
+    interviews_utilisateurs: true
+    douleur_confirmee: true
+    pret_a_payer: false
